@@ -1,0 +1,257 @@
+{
+	"info": {
+		"_postman_id": "3fc92ad2-02c4-4665-b01e-1194ef4c0c82",
+		"name": "Protocolos de Atendimento",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37800493"
+	},
+	"item": [
+		{
+			"name": "Consulta Assinatura por CPF",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"var assinante = jsonData[0];\r",
+							"pm.environment.set('idassinante', assinante.idassinante);\r",
+							"//Armazena o idassinante do cliente e armazena nas variaveis de ambiente\r",
+							"pm.environment.set('idcontrato', assinante.contratos[0].idcontrato);\r",
+							"//Armazena o idcontrato do cliente e armazena nas variaveis de ambiente\r",
+							"\r",
+							"pm.test(\"Sucesso!\", () => {\r",
+							"//Valida se foi retornado um status de sucesso\r",
+							"    pm.response.to.have.status(200);\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Corpo da Requisição\", () => {\r",
+							"//Valida se a resposta está retornando todos os campos listados\r",
+							"    pm.expect(assinante).to.have.all.keys(\r",
+							"        \"chavebase\",\r",
+							"        \"nomebase\",\r",
+							"        \"nomeregional\",\r",
+							"        \"nomecidade\",\r",
+							"        \"uf\",\r",
+							"        \"idassinante\",\r",
+							"        \"codigoassinante\",\r",
+							"        \"nomeassinante\",\r",
+							"        \"cpfcnpj\",\r",
+							"        \"email\",\r",
+							"        \"data_nascimento\",\r",
+							"        \"idclassificacao\",\r",
+							"        \"codigoclassificacao\",\r",
+							"        \"descricaoclassificacao\",\r",
+							"        \"telefones\",\r",
+							"        \"contratos\",\r",
+							"        \"faturas\"\r",
+							"    )\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "integrationSecret",
+						"value": "a281281e-568a-4f58-862d-1353d28b25a9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cpfcnpj\": \"501.890.503-49\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basicUrl}}/ura/assinante_por_cpfcnpj",
+					"host": [
+						"{{basicUrl}}"
+					],
+					"path": [
+						"ura",
+						"assinante_por_cpfcnpj"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Criar Historico",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Sucesso!\", () => {\r",
+							"//Valida se foi retornado um status de sucesso\r",
+							"    pm.response.to.have.status(200);\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Número do Protocolo\", () => {\r",
+							"//Valida se a resposta possui a propriedade numProtocolo e se é uma string com valor não nulo\r",
+							"    pm.expect(jsonData).to.have.property('numProtocolo');\r",
+							"    pm.expect(jsonData.numProtocolo).to.be.a('string').and.to.not.be.null;\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Tempo de Resposta menor que 500ms\", () =>{\r",
+							"//Valida se o tempo de resposta da requisição é menor que 500ms\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"chaveBase\":\"545a2e3378bec8957149413d82253893\",\r\n    \"descricaoHistorico\":\"Teste de Automatização\",\r\n    \"codigoGrupo\":211,\r\n    \"codigoAssunto\":311,\r\n    \"idAssinante\": {{idassinante}},\r\n    \"idContrato\": {{idcontrato}},\r\n    \"usuarioHistorico\":\"api_ura\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basicUrl}}/criar_historico",
+					"host": [
+						"{{basicUrl}}"
+					],
+					"path": [
+						"criar_historico"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Consulta Historico",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"var historico = jsonData[0];\r",
+							"\r",
+							"pm.test(\"Sucesso!\", () => {\r",
+							"//Valida se foi retornado um status de sucesso\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Id Contrato\", () => {\r",
+							"//Valida se o idcontrato retornado é o mesmo do cliente consultado anteriormente por cpf/cnpj\r",
+							"    pm.expect(historico.idcontrato).to.equal(pm.environment.get('idcontrato'));\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Código Cliente\", () => {\r",
+							"//Valida se o codigocliente retornado é o mesmo do cliente consultado anteriormente por cpf/cnpj\r",
+							"    pm.expect(historico.codigocliente).to.equal(pm.environment.get('idassinante'));\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Corpo do Histórico\", () => {\r",
+							"//Valida se a resposta está retornando todos os campos listados\r",
+							"    pm.expect(historico).to.have.all.keys(\r",
+							"        \"cidade\",\r",
+							"        \"codempresa\",\r",
+							"        \"razaosocial\",\r",
+							"        \"codcontrato\",\r",
+							"        \"idcontrato\",\r",
+							"        \"codigocliente\",\r",
+							"        \"nomecliente\",\r",
+							"        \"grupo\",\r",
+							"        \"assunto\",\r",
+							"        \"descricao\",\r",
+							"        \"ordemhistorico\",\r",
+							"        \"atendente\",\r",
+							"        \"usuario\",\r",
+							"        \"usuarioresponsavel\",\r",
+							"        \"recorrencia\",\r",
+							"        \"tempopadraofinalizacaohistorico\",\r",
+							"        \"cadastro\",\r",
+							"        \"fechamento\",\r",
+							"        \"tempodecorridohistorico\",\r",
+							"        \"oscontrato\"\r",
+							"    )\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"chavebase\":\"545a2e3378bec8957149413d82253893\",\r\n    \"apenasrecorrencia\":false,\r\n    \"codigogrupo\":211,\r\n    \"codigoassunto\":311,\r\n    \"idcontrato\": {{idcontrato}},\r\n    \"cadastroinicio\":\"2024-11-29\",\r\n    \"cadastrofim\":\"2024-11-29\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "192.168.10.35:8039/api/consulta_historico",
+					"host": [
+						"192",
+						"168",
+						"10",
+						"35"
+					],
+					"port": "8039",
+					"path": [
+						"api",
+						"consulta_historico"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
